@@ -11,7 +11,7 @@ def get_network(network_name, n_classes, exp_dict):
         model_base = infnet.InfNet(n_classes=1, loss=exp_dict['model']['loss'])
 
     if network_name == 'fcn8_vgg16':
-        model_base = fcn8_vgg16.FCN8VGG16(n_classes=n_classes)
+        model_base = fcn8_vgg16.FCN8VGG16(n_classes=n_classes, n_channels=exp_dict['model']['n_channels'])
 
     if network_name == "fcn8_vgg16_multiscale":
         model_base = fcn8_vgg16_multiscale.FCN8VGG16(n_classes=n_classes)

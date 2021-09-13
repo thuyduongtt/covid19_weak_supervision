@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-from . import covid19_v3, covid19_v2, covid19_v1
+from . import covid19_v3, covid19_v2, covid19_v1, QB
 from src import utils as ut
 import os
 import os
@@ -10,7 +10,12 @@ import torch
 
 def get_dataset(dataset_dict, split, datadir, exp_dict, dataset_size=None):
     name = dataset_dict['name']
-    if name == "covid19_v1":
+    if name == "QB":
+        dataset = QB.QBDataset(split=split,  datadir=datadir, exp_dict=exp_dict)
+        if dataset_size is not None and dataset_size.get(split, 'all') != 'all':
+            dataset.dataset_size = dataset_size[split]
+
+    elif name == "covid19_v1":
         possible_datadir = ('/mnt/datasets/public/issam/data/' +
                     'medical/COVID-SemiSeg')
         if os.path.exists(possible_datadir):

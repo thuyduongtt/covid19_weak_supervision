@@ -7,15 +7,18 @@ import torch.utils.model_zoo as model_zoo
 
 #----------- LC-FCN8
 class FCN8VGG16(nn.Module):
-    def __init__(self, n_classes):
+    def __init__(self, n_classes, n_channels=3):
         super().__init__()
+
+        print(f'n_channels = {n_channels}')
+
         self.n_classes = n_classes
         # PREDEFINE LAYERS
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True)
         self.relu = nn.ReLU(inplace=True)
       
         # VGG16 PART
-        self.conv1_1 = conv3x3(3, 64, stride=1, padding=100)
+        self.conv1_1 = conv3x3(n_channels, 64, stride=1, padding=100)
         self.conv1_2 = conv3x3(64, 64)
         
         self.conv2_1 = conv3x3(64, 128)
