@@ -15,14 +15,14 @@ class FCN8VGG16(nn.Module):
 
         self.n_classes = n_classes
 
-        self.init_layer = nn.Conv2d(n_channels, 3, kernel_size=1)
+        self.transition_layer = nn.Conv2d(n_channels, 3, kernel_size=1)
 
         # PREDEFINE LAYERS
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True)
         self.relu = nn.ReLU(inplace=True)
 
         # VGG16 PART
-        self.conv1_1 = conv3x3(n_channels, 64, stride=1, padding=100)
+        self.conv1_1 = conv3x3(3, 64, stride=1, padding=100)
         self.conv1_2 = conv3x3(64, 64)
 
         self.conv2_1 = conv3x3(64, 128)
@@ -69,6 +69,7 @@ class FCN8VGG16(nn.Module):
         self.upscore2.weight.data.copy_(get_upsampling_weight(self.n_classes, self.n_classes, 4))
         self.upscore_pool4.weight.data.copy_(get_upsampling_weight(self.n_classes, self.n_classes, 4))
         self.upscore8.weight.data.copy_(get_upsampling_weight(self.n_classes, self.n_classes, 16))
+
         # Pretrained layers
         pth_url = 'https://download.pytorch.org/models/vgg16-397923af.pth'  # download from model zoo
         state_dict = model_zoo.load_url(pth_url)
@@ -77,6 +78,8 @@ class FCN8VGG16(nn.Module):
 
         counter = 0
         for p in self.parameters():
+            if counter == 0:
+                continue  # transition_layer: do nothing
             if counter < 26:  # conv1_1 to pool5
                 p.data = state_dict[layer_names[counter]]
             elif counter == 26:  # fc6 weight
@@ -93,8 +96,7 @@ class FCN8VGG16(nn.Module):
     def forward(self, x):
         n, c, h, w = x.size()  # torch.Size([1, 6, 256, 256])
 
-        xx = self.init_layer(x)
-        print(xx.size())
+        xx = self.transition_layer(x)
 
         # VGG16 PART
         conv1_1 = self.relu(self.conv1_1(xx))
@@ -172,15 +174,3 @@ def conv1x1(in_planes, out_planes, stride=1):
     "1x1 convolution with padding"
     return nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride,
                      padding=0)
-
-
-def print_size(x, name=None):
-    shape = x.shape
-    size = 1
-    for s in shape:
-        size *= s
-    if name is not None:
-        print('===== ' + name)
-    print(shape)
-    print(size)
-    return size
