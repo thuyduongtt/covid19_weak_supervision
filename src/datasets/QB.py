@@ -85,11 +85,18 @@ class QBDataset(data.Dataset):
         img1 = Image.open(img_path_1).convert('RGB')
         img2 = Image.open(img_path_2).convert('RGB')
         image = np.concatenate((img1, img2), axis=-1)
-        gt = Image.open(label_path).convert('L')
+        gt = Image.open(label_path)
 
         image = self.img_transform(image)
         gt = self.gt_transform(gt)
         tgt_mask = np.array(gt)
+
+        # binarize the ground truth
+        m = tgt_mask.min()
+        n = tgt_mask.max()
+        mid = (m + n) / 2
+        tgt_mask[tgt_mask < mid] = 0
+        tgt_mask[tgt_mask >= mid] = 255
 
         assert (len(np.setdiff1d(np.unique(tgt_mask), [0, 127, 255])) == 0)
 
@@ -135,4 +142,3 @@ class QBDataset(data.Dataset):
 
     def __len__(self):
         return self.dataset_size
-
