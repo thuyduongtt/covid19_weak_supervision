@@ -1,5 +1,6 @@
 from PIL import Image
 import numpy as np
+from pathlib import Path
 
 if __name__ == '__main__':
     gt = Image.open('gt.bmp')
@@ -18,3 +19,4 @@ if __name__ == '__main__':
 
     print(np.unique(tgt_mask))
     print(np.setdiff1d(np.unique(tgt_mask), [0, 127, 255]))
+

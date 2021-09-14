@@ -21,16 +21,16 @@ class QBDataset(data.Dataset):
             if regionOrPatch.is_dir():
                 for patch in regionOrPatch.iterdir():
                     items.append((
-                        patch,
-                        Path(path, input_dir_2, regionOrPatch.stem, patch.name),
-                        Path(path, label_dir, regionOrPatch.stem, patch.name),
+                        str(patch),
+                        str(Path(path, input_dir_2, regionOrPatch.stem, patch.name)),
+                        str(Path(path, label_dir, regionOrPatch.stem, patch.name)),
                         patch.name
                     ))
             else:
                 items.append((
-                    regionOrPatch,
-                    Path(path, input_dir_2, regionOrPatch.name),
-                    Path(path, label_dir, regionOrPatch.name),
+                    str(regionOrPatch),
+                    str(Path(path, input_dir_2, regionOrPatch.name)),
+                    str(Path(path, label_dir, regionOrPatch.name)),
                     regionOrPatch.name
                 ))
 
@@ -129,7 +129,7 @@ class QBDataset(data.Dataset):
                  'masks': mask[None],
                  'points': points,
                  'meta': {'name': index,
-                          'hash': hu.hash_dict({'id': self.images[index]}),
+                          'hash': hu.hash_dict({'id': self.images[index][0]}),
                           # 'hash':self.images[index],
                           'shape': mask.squeeze().shape,
                           'index': index,
